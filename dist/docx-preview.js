@@ -1890,12 +1890,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseCheckbox = void 0;
 const dom_1 = __webpack_require__(/*! ./dom */ "./src/document/dom.ts");
 const xml_parser_1 = __webpack_require__(/*! ../parser/xml-parser */ "./src/parser/xml-parser.ts");
-const getName = (checkboxWrapperElement) => {
-    const statusTextElement = checkboxWrapperElement.getElementsByTagName("w:statusText")[0];
+const getName = (checkboxElement) => {
+    const parentElement = checkboxElement.parentElement;
+    const statusTextElement = parentElement.getElementsByTagName("w:statusText")[0];
     const statusTextName = statusTextElement ? xml_parser_1.default.attr(statusTextElement, "val") : "";
     if (statusTextName)
         return statusTextName;
-    const nameElement = checkboxWrapperElement.getElementsByTagName("w:name")[0];
+    const nameElement = parentElement.getElementsByTagName("w:name")[0];
     const nameNodeText = nameElement ? xml_parser_1.default.attr(nameElement, "val") : "";
     return nameNodeText || "unknownCheckbox";
 };
@@ -1909,7 +1910,7 @@ const parseCheckbox = (element) => {
         return null;
     return {
         type: dom_1.DomType.CheckboxFormField,
-        name: getName(checkboxElement.parentElement),
+        name: getName(checkboxElement),
         checked: getDefaultChecked(checkboxElement),
     };
 };
@@ -3182,14 +3183,9 @@ section.${c}>article { margin-bottom: auto; }
         return result;
     }
     renderCheckbox({ name, checked }) {
-        const input = this.createElement("input");
-        input.setAttribute("type", "checkbox");
-        input.setAttribute("name", name);
-        input.setAttribute("id", name);
-        if (checked) {
-            input.setAttribute("checked", "checked");
-        }
-        return input;
+        return this.createElement("input", Object.assign({ type: "checkbox", name, id: name }, (checked && {
+            checked: "checked",
+        })));
     }
     renderTable(elem) {
         let result = this.createElement("table");
@@ -4302,10 +4298,11 @@ class WordDocument {
         return this._package.save(type);
     }
     async loadRelationshipPart(path, type) {
+        var _a;
         if (this.partsMap[path])
-            return Promise.resolve(this.partsMap[path]);
+            return this.partsMap[path];
         if (!this._package.get(path))
-            return Promise.resolve(null);
+            return null;
         let part = null;
         switch (type) {
             case relationship_1.RelationshipTypes.OfficeDocument:
@@ -4353,13 +4350,10 @@ class WordDocument {
         this.partsMap[path] = part;
         this.parts.push(part);
         await part.load();
-        if (part.rels == null || part.rels.length == 0)
-            return part;
-        const [folder] = (0, utils_1.splitPath)(part.path);
-        const rels = part.rels.map(rel => {
-            return this.loadRelationshipPart((0, utils_1.resolvePath)(rel.target, folder), rel.type);
-        });
-        await Promise.all(rels);
+        if (((_a = part.rels) === null || _a === void 0 ? void 0 : _a.length) > 0) {
+            const [folder] = (0, utils_1.splitPath)(part.path);
+            await Promise.all(part.rels.map(rel => this.loadRelationshipPart((0, utils_1.resolvePath)(rel.target, folder), rel.type)));
+        }
         return part;
     }
     async loadDocumentImage(id, part) {
