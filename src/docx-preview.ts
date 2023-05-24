@@ -7,6 +7,7 @@ export interface Options {
     ignoreWidth: boolean;
     ignoreHeight: boolean;
     ignoreFonts: boolean;
+    ignorePageMargins: boolean;
     breakPages: boolean;
     debug: boolean;
     experimental: boolean;
@@ -26,6 +27,7 @@ export const defaultOptions: Options = {
     ignoreHeight: false,
     ignoreWidth: false,
     ignoreFonts: false,
+    ignorePageMargins: false,
     breakPages: true,
     debug: false,
     experimental: false,

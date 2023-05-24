@@ -2339,6 +2339,7 @@ exports.defaultOptions = {
     ignoreHeight: false,
     ignoreWidth: false,
     ignoreFonts: false,
+    ignorePageMargins: false,
     breakPages: true,
     debug: false,
     experimental: false,
@@ -2720,7 +2721,7 @@ class HtmlRenderer {
     createSection(className, props) {
         var elem = this.createElement("section", { className });
         if (props) {
-            if (props.pageMargins) {
+            if (props.pageMargins && !this.options.ignorePageMargins) {
                 elem.style.paddingLeft = props.pageMargins.left;
                 elem.style.paddingRight = props.pageMargins.right;
                 elem.style.paddingTop = props.pageMargins.top;
