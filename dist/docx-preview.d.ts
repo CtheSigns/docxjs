@@ -3,6 +3,7 @@ export interface Options {
     ignoreWidth: boolean;
     ignoreHeight: boolean;
     ignoreFonts: boolean;
+    ignorePageMargins: boolean;
     breakPages: boolean;
     debug: boolean;
     experimental: boolean;
@@ -11,11 +12,11 @@ export interface Options {
     renderHeaders: boolean;
     renderFooters: boolean;
     renderFootnotes: boolean;
-	renderEndnotes: boolean;
+    renderEndnotes: boolean;
     ignoreLastRenderedPageBreak: boolean;
-	useBase64URL: boolean;
-	useMathMLPolyfill: boolean;
-	renderChanges: boolean;
+    useBase64URL: boolean;
+    useMathMLPolyfill: boolean;
+    renderChanges: boolean;
 }
 
 export declare const defaultOptions: Options; 
